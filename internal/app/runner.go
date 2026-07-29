@@ -67,7 +67,6 @@ func Run(resources EmbeddedResources) error {
 	proxyService := bridge.NewProxyService(proxyServer, certManager, embeddedCACertPEM)
 	metricsService := bridge.NewMetricsService()
 	windowService := bridge.NewWindowService()
-
 	app := application.New(application.Options{
 		Name:        appName,
 		Description: appName,

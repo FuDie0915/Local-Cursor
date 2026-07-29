@@ -9,6 +9,7 @@ import { GetHomeMetricsSummary } from "@bindings/cursor/internal/bridge/metricss
 import {
   GetAppVersion,
   GetModelEditorContext,
+  OpenCLITerminal,
   OpenConfigWindow,
   OpenHistoryWindow,
   OpenModelConfigWindow,
@@ -90,6 +91,10 @@ export function openModelEditor(index, adapterJSON) {
   return withApiLogging("OpenModelEditorWindow", { index, adapterJSON }, () =>
     OpenModelEditorWindow(index, adapterJSON),
   );
+}
+
+export function openCLITerminal() {
+  return withApiLogging("OpenCLITerminal", undefined, () => OpenCLITerminal());
 }
 
 export function getModelEditorContext() {

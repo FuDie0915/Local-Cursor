@@ -2,7 +2,7 @@
 
 本地运行的 Cursor IDE 代理工具。通过 MITM 代理劫持 Cursor 的 AI 请求，转发到自定义模型 API（OpenAI / Anthropic 兼容），支持本地助手模式与直连上游模式。
 
-> **基于原项目 [cursor-byok](https://github.com/leookun/cursor-byok.git) 衍生。**
+> **基于原项目 [cursor-byok](https://github.com/leookun/cursor-byok.git) 衍生。如侵权请联系删除，一定配合**
 
 ## 架构概览
 
@@ -325,7 +325,7 @@ task release:github
 
 ## 许可证
 
-MIT
+本项目采用 [MIT 协议](LICENSE) 开源，任何人可自由使用、修改和分发。
 
 ## 致谢
 

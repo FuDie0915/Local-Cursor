@@ -16,10 +16,12 @@ import {
   toUserError,
   toggleService,
 } from "@/state/appState";
-import { computed, onMounted } from "vue";
+import { openCLITerminal } from "@/services/clientApi";
+import { computed, onMounted, ref } from "vue";
 
 const directModeEnabled = computed(() => appState.routingMode === "upstream");
 const message = useMessage();
+const cliTerminalBusy = ref(false);
 
 async function showActionError(title, error) {
   await showModal({
@@ -72,6 +74,25 @@ async function handleDirectModeChange(enabled) {
     return;
   }
   message.success(enabled ? "已切换到直连 Cursor 模式" : "已切换到本地服务模式");
+}
+
+async function handleOpenCLITerminal() {
+  if (cliTerminalBusy.value) {
+    return;
+  }
+  cliTerminalBusy.value = true;
+  try {
+    const result = await openCLITerminal();
+    if (!result?.ok) {
+      await showActionError("CLI 终端", result?.error || "打开失败");
+      return;
+    }
+    message.success("CLI 终端已打开，请在终端中 cd 到项目目录后运行 cursor-agent");
+  } catch (error) {
+    await showActionError("CLI 终端", toUserError(error));
+  } finally {
+    cliTerminalBusy.value = false;
+  }
 }
 
 onMounted(() => {
@@ -134,6 +155,22 @@ onMounted(() => {
         <div class="flex items-center gap-2">
           <Button variant="default" @click="handleOpenConfig">设置文件夹</Button>
           <Button variant="primary" @click="handleOpenModelConfig">模型配置</Button>
+        </div>
+      </div>
+    </Card>
+
+    <!-- cli terminal -->
+    <Card>
+      <div class="flex items-center justify-between gap-4">
+        <div>
+          <h2 class="text-[14px] font-medium text-white">CLI 终端</h2>
+          <div class="text-[12px] text-[#a8a8a8]">以管理员权限打开终端，预配置 wrapper 环境变量</div>
+        </div>
+        <div class="flex items-center gap-2">
+          <Button variant="default" :disabled="cliTerminalBusy" @click="handleOpenCLITerminal">
+            <span class="icon-[mdi--console-line] text-[16px]"></span>
+            <span>{{ cliTerminalBusy ? "打开中..." : "打开终端" }}</span>
+          </Button>
         </div>
       </div>
     </Card>
