@@ -219,7 +219,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="flex h-full min-h-0 flex-col p-4 pt-0 text-[#e5e5e5] overflow-hidden">
+  <div class="flex h-full min-h-0 flex-col p-4 pt-0 text-white overflow-hidden">
     <div class="shrink-0 pb-4">
       <div class="flex items-center justify-between gap-4">
         <div class="center-row gap-2">
@@ -229,8 +229,8 @@ onBeforeUnmount(() => {
             type="button"
             class="center-row gap-2 rounded-[8px] border px-3 py-2 text-sm transition-colors duration-150"
             :class="activeType === tab.value
-              ? 'border-[#1ca35a] bg-[#123322] text-white'
-              : 'border-[#343434] bg-[#252525] text-[#a3a3a3] hover:border-[#4a4a4a] hover:text-[#e5e5e5]'"
+              ? 'border-white bg-white/10 text-white'
+              : 'border-[#2a2a2a] bg-[#141414] text-[#a8a8a8] hover:border-[#666] hover:text-white'"
             @click="activeType = tab.value"
           >
             <span :class="[tab.icon, 'text-[16px]']"></span>
@@ -252,7 +252,7 @@ onBeforeUnmount(() => {
 
     <div class="min-h-0 flex-1">
       <div v-if="filteredAdapters.length === 0"
-        class="flex h-full min-h-[220px] items-center justify-center rounded-[8px] border border-dashed border-[#3a3a3a] bg-[#232323] px-4 text-sm text-[#a3a3a3]">
+        class="flex h-full min-h-[220px] items-center justify-center rounded-[4px] border border-dashed border-[#2a2a2a] bg-[#141414] px-4 text-sm text-[#a8a8a8]">
         当前还没有配置任何 {{ typeLabel(activeType) }} 模型。
       </div>
 
@@ -267,13 +267,13 @@ onBeforeUnmount(() => {
                 <div class="flex items-start justify-between gap-3">
                   <div class="min-w-0 flex-1">
                     <div class="truncate text-base font-medium text-white">{{ adapter.displayName }}</div>
-                    <div class="mt-1 truncate text-sm text-[#8f8f8f]">{{ adapter.modelID }}</div>
-                    <div v-if="adapter.type === 'openai'" class="mt-0.5 truncate text-xs text-[#737373]">
+                    <div class="mt-1 truncate text-sm text-[#666]">{{ adapter.modelID }}</div>
+                    <div v-if="adapter.type === 'openai'" class="mt-0.5 truncate text-xs text-[#666]">
                       {{ adapter.openAIEndpoint || "/v1/responses" }}
                     </div>
                   </div>
                   <span
-                    class="center-row shrink-0 gap-1 rounded-[999px] border border-[#3f3f3f] px-[7px] py-[4px] text-[11px] font-medium text-[#cfcfcf]"
+                    class="center-row shrink-0 gap-1 rounded-[999px] border border-[#383838] px-[7px] py-[4px] text-[11px] font-medium text-white"
                   >
                     <span class="icon-[bxl--openai] text-[14px] !text-white" v-if="adapter.type === 'openai'"></span>
                     <span class="icon-[logos--claude-icon] text-[14px]" v-else></span>
@@ -281,14 +281,14 @@ onBeforeUnmount(() => {
                   </span>
                 </div>
 
-                <div class="grid grid-cols-2 gap-2 text-sm text-[#a3a3a3]">
-                  <div class="rounded-[8px] bg-[#232323] px-3 py-2">
+                <div class="grid grid-cols-2 gap-2 text-sm text-[#a8a8a8]">
+                  <div class="rounded-[4px] bg-[#141414] px-3 py-2">
                     <div class="text-[11px] uppercase tracking-[0.08em] text-[#666]">Host</div>
-                    <div class="mt-1 truncate text-[#d4d4d4]" :title="adapter.baseURL">{{ formatHost(adapter.baseURL) }}</div>
+                    <div class="mt-1 truncate text-white" :title="adapter.baseURL">{{ formatHost(adapter.baseURL) }}</div>
                   </div>
-                  <div class="rounded-[8px] bg-[#232323] px-3 py-2">
+                  <div class="rounded-[4px] bg-[#141414] px-3 py-2">
                     <div class="text-[11px] uppercase tracking-[0.08em] text-[#666]">API Key</div>
-                    <div class="mt-1 truncate text-[#d4d4d4]">{{ maskSecret(adapter.apiKey) }}</div>
+                    <div class="mt-1 truncate text-white">{{ maskSecret(adapter.apiKey) }}</div>
                   </div>
                 </div>
 
@@ -300,7 +300,7 @@ onBeforeUnmount(() => {
                 />
               </div>
 
-              <div class="center-row flex-wrap justify-end gap-2 border-t border-[#343434] pt-3">
+              <div class="center-row flex-wrap justify-end gap-2 border-t border-[#2a2a2a] pt-3">
                 <Button
                   variant="default"
                   :disabled="appState.configSaving || batchTesting || isAdapterTesting(adapter)"

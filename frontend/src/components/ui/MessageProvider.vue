@@ -5,22 +5,22 @@ provideMessage();
 
 const MESSAGE_THEME = {
   success: {
-    containerClass: "bg-[#10AD5D] text-white",
+    containerClass: "bg-white text-black",
     iconClass: "icon-[dashicons--yes]",
     iconExtraClass: "",
   },
   error: {
-    containerClass: "bg-[#D84C4C] text-white",
+    containerClass: "bg-[#1c1c1c] text-white border border-[#555]",
     iconClass: "",
     iconExtraClass: "",
   },
   info: {
-    containerClass: "bg-[#F08A24] text-white",
+    containerClass: "bg-[#1c1c1c] text-white",
     iconClass: "",
     iconExtraClass: "",
   },
   loading: {
-    containerClass: "bg-[#3a3a3a] text-white",
+    containerClass: "bg-[#1c1c1c] text-white",
     iconClass: "icon-[mingcute--loading-fill]",
     iconExtraClass: "animate-spin",
   },

@@ -212,12 +212,12 @@ async function toggleIncludeCacheWriteInHitRate(value) {
           <h2 class="text-[14px] font-medium text-white/80">会话统计</h2>
         </div>
         <div
-          class="flex-1 center-row justify-end shrink-0 gap-2 text-xs text-[#6f6f6f] pr-4 w-[200px]"
+          class="flex-1 flex items-center justify-end shrink-0 gap-2 text-xs text-[#666] pr-4 w-[200px]"
         >
           <span>刷新统计</span>
           <button
             type="button"
-            class="center-row justify-center h-[24px] w-[24px] rounded-[6px] border border-[#3b3b3b] bg-[#242424] text-[#9d9d9d] transition-colors duration-150 hover:border-[#4c4c4c] hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
+            class="flex items-center justify-center h-[24px] w-[24px] rounded-[4px] border border-[#383838] bg-[#141414] text-[#a8a8a8] transition-colors duration-150 hover:border-[#666] hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
             :disabled="loading"
             :title="loading ? '刷新中' : '刷新统计'"
             @click="emit('refresh')"
@@ -231,14 +231,14 @@ async function toggleIncludeCacheWriteInHitRate(value) {
       </div>
 
       <div
-        class="mt-[-4px] grid grid-cols-4 gap-0 overflow-hidden rounded-[8px] border border-[#343434] bg-[#242424] h-[130px]"
+        class="mt-[-4px] grid grid-cols-4 gap-0 overflow-hidden rounded-[8px] border border-[#2a2a2a] bg-[#0a0a0a] h-[130px]"
       >
         <div class="min-w-0 px-4 py-4 flex flex-col justify-between">
-          <div class="center-row justify-start gap-1 text-xs text-[#7f7f7f]">
+          <div class="flex items-center justify-start gap-1 text-xs text-[#666]">
             <span>缓存命中率</span>
             <Tooltip>
               <div class="w-[280px] space-y-3">
-                <div class="border-b border-[#343434] pb-3">
+                <div class="border-b border-[#2a2a2a] pb-3">
                   <Switch
                     compact
                     label="计入缓存创建"
@@ -252,7 +252,7 @@ async function toggleIncludeCacheWriteInHitRate(value) {
                   />
                 </div>
                 <div class="whitespace-pre-wrap">{{ cacheTooltipContent }}</div>
-                <div v-if="homeMetricsConfigError" class="text-[11px] text-[#f87171]">
+                <div v-if="homeMetricsConfigError" class="text-[11px] text-[#ff4444]">
                   {{ homeMetricsConfigError }}
                 </div>
               </div>
@@ -262,21 +262,20 @@ async function toggleIncludeCacheWriteInHitRate(value) {
         </div>
 
         <div
-          class="min-w-0 border-l border-[#343434] px-4 py-4 flex flex-col justify-between"
+          class="min-w-0 border-l border-[#2a2a2a] px-4 py-4 flex flex-col justify-between"
         >
-          <div class="center-row justify-start gap-1 text-xs text-[#7f7f7f]">
+          <div class="flex items-center justify-start gap-1 text-xs text-[#666]">
             <span>对话轮次</span>
             <Tooltip :content="turnsTooltipContent" />
           </div>
           <div>
             <div
               class="text-[30px] leading-none text-white"
-              style="font-family: var(--font-num)"
               :title="formatInteger(metrics.turnsTotal)"
             >
               {{ formatCompactInteger(metrics.turnsTotal) }}
             </div>
-            <div class="mt-3 text-xs leading-5 text-[#8c8c8c]">
+            <div class="mt-3 text-xs leading-5 text-[#666]">
               有效
               <span :title="formatInteger(metrics.validTurnsTotal)">
                 {{ formatCompactInteger(metrics.validTurnsTotal) }}
@@ -290,9 +289,9 @@ async function toggleIncludeCacheWriteInHitRate(value) {
         </div>
 
         <div
-          class="min-w-0 border-l border-[#343434] px-4 py-4 flex flex-col justify-between"
+          class="min-w-0 border-l border-[#2a2a2a] px-4 py-4 flex flex-col justify-between"
         >
-          <div class="center-row justify-start gap-1 text-xs text-[#7f7f7f]">
+          <div class="flex items-center justify-start gap-1 text-xs text-[#666]">
             <span>Token 消耗</span>
             <Tooltip :content="tokensTooltipContent" />
           </div>
@@ -304,7 +303,7 @@ async function toggleIncludeCacheWriteInHitRate(value) {
             >
               {{ formatCompactInteger(metrics.requestTokensTotal) }}
             </div>
-            <div class="mt-3 text-xs leading-5 text-[#8c8c8c]">
+            <div class="mt-3 text-xs leading-5 text-[#666]">
               Prompt
               <span :title="formatInteger(metrics.promptTokensTotal)">
                 {{ formatCompactInteger(metrics.promptTokensTotal) }}
@@ -314,9 +313,9 @@ async function toggleIncludeCacheWriteInHitRate(value) {
         </div>
 
         <div
-          class="min-w-0 border-l border-[#343434] px-4 py-4 flex flex-col justify-between"
+          class="min-w-0 border-l border-[#2a2a2a] px-4 py-4 flex flex-col justify-between"
         >
-          <div class="center-row justify-start gap-1 text-xs text-[#7f7f7f]">
+          <div class="flex items-center justify-start gap-1 text-xs text-[#666]">
             <span>价值估算</span>
             <Tooltip :content="costTooltipContent" />
           </div>
@@ -328,7 +327,7 @@ async function toggleIncludeCacheWriteInHitRate(value) {
             >
               {{ formatUSD(estimatedTokenCost.total) }}
             </div>
-            <div class="mt-3 text-xs leading-5 text-[#8c8c8c]">
+            <div class="mt-3 text-xs leading-5 text-[#666]">
               缓存读写
               <span :title="formatUSD(estimatedTokenCost.cacheRead + estimatedTokenCost.cacheWrite)">
                 {{ formatUSD(estimatedTokenCost.cacheRead + estimatedTokenCost.cacheWrite) }}

@@ -1,12 +1,6 @@
 <script setup></script>
 <template>
-  <div
-    class="rounded-[8px] p-[1px]"
-    style="background: linear-gradient(to bottom, #656565 0%, #3A3A3A 10px, #3A3A3A 100%);"
-  >
-    <div class="rounded-[7px] bg-[#292929] p-4">
-      <slot />
-    </div>
-
+  <div class="rounded-[8px] border border-[#2a2a2a] bg-[#0a0a0a] p-4">
+    <slot />
   </div>
 </template>

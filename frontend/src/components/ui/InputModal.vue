@@ -40,35 +40,32 @@ function onEnter(event) {
     <Transition name="modal-mask">
       <div
         v-show="visible"
-        class="modal-mask-layer fixed inset-0 z-999 flex items-center justify-center bg-black/50 p-4"
+        class="modal-mask-layer fixed inset-0 z-999 flex items-center justify-center bg-black/60 p-4"
         @click.self="onMaskClick"
       >
         <Transition name="modal-content">
           <div
             v-show="visible"
-            class="relative z-10 w-full max-w-[380px] overflow-hidden rounded-[8px] p-px shadow-[0_25px_50px_-12px_rgba(0,0,0,0.6)]"
-            style="background: linear-gradient(to bottom, #656565 0%, #3A3A3A 10px, #3A3A3A 100%);"
+            class="relative z-10 w-full max-w-[380px] overflow-hidden rounded-[8px] border border-[#383838] bg-[#141414] p-5 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.8)]"
             @click.stop
           >
-            <div class="rounded-[7px] bg-[#292929] p-5">
-              <h3 class="mb-3 text-base font-medium text-white">
-                {{ title }}
-              </h3>
-              <p class="mb-3 text-sm leading-relaxed text-[#a3a3a3]">
-                {{ content }}
-              </p>
-              <input
-                :value="modelValue"
-                :placeholder="placeholder"
-                type="text"
-                class="mb-5 h-9 w-full rounded-[6px] border border-[#3f3f3f] bg-[#232323] px-3 text-sm text-[#e5e5e5] outline-none focus:border-[#10AD5D]"
-                @input="onInput"
-                @keydown.enter="onEnter"
-              />
-              <div class="flex justify-end gap-2">
-                <Button variant="default" @click="handleCancel">取消</Button>
-                <Button variant="primary" @click="handleConfirm">确定</Button>
-              </div>
+            <h3 class="mb-3 text-base font-medium text-white">
+              {{ title }}
+            </h3>
+            <p class="mb-3 text-sm leading-relaxed text-[#a8a8a8]">
+              {{ content }}
+            </p>
+            <input
+              :value="modelValue"
+              :placeholder="placeholder"
+              type="text"
+              class="mb-5 h-9 w-full rounded-[4px] border border-[#383838] bg-[#141414] px-3 text-sm text-white outline-none focus:border-white"
+              @input="onInput"
+              @keydown.enter="onEnter"
+            />
+            <div class="flex justify-end gap-2">
+              <Button variant="default" @click="handleCancel">取消</Button>
+              <Button variant="primary" @click="handleConfirm">确定</Button>
             </div>
           </div>
         </Transition>

@@ -33,14 +33,14 @@ function handleToggle() {
       <div
         v-if="description"
         :class="compact ? 'text-[11px] leading-[16px]' : 'text-xs'"
-        class="text-[#a3a3a3]"
+        class="text-[#a8a8a8]"
       >
         {{ description }}
       </div>
       <div
         :class="[
           compact ? 'text-[11px] leading-[16px]' : 'text-xs',
-          enabled ? 'text-[#10AD5D]' : 'text-[#a3a3a3]',
+          enabled ? 'text-white' : 'text-[#666]',
         ]"
       >
         {{ busy ? busyText : enabled ? enabledText : disabledText }}
@@ -52,13 +52,13 @@ function handleToggle() {
       role="switch"
       :aria-checked="enabled"
       :disabled="disabled || busy"
-      class="relative inline-flex h-[22px] w-[40px] shrink-0 cursor-pointer rounded-full outline-none transition-all duration-200 ease-out disabled:cursor-not-allowed disabled:opacity-55 focus-visible:ring-2 focus-visible:ring-[#10AD5D]/35"
-      :class="enabled ? 'bg-[#10AD5D]' : 'bg-[rgba(255,255,255,0.22)]'"
+      class="relative inline-flex h-[18px] w-[34px] shrink-0 cursor-pointer rounded-full outline-none transition-all duration-200 ease-out disabled:cursor-not-allowed disabled:opacity-50 focus-visible:ring-2 focus-visible:ring-white/30"
+      :class="enabled ? 'bg-white' : 'bg-[#1c1c1c] border border-[#383838]'"
       @click="handleToggle"
     >
       <span
-        class="absolute left-[2px] top-[2px] inline-flex h-[18px] w-[18px] rounded-full bg-white shadow-[0_2px_5px_rgba(0,0,0,0.22)] transition-all duration-200 ease-out"
-        :class="enabled ? 'translate-x-[18px]' : 'translate-x-0'"
+        class="absolute top-[2px] left-[2px] inline-flex h-[12px] w-[12px] rounded-full transition-all duration-200 ease-out"
+        :class="enabled ? 'translate-x-[16px] bg-black' : 'translate-x-0 bg-[#666]'"
       />
     </button>
   </div>

@@ -80,33 +80,26 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="flex flex-col gap-4 p-4 pt-0 text-[#e5e5e5]">
-    <HomeMetricsCard
-      :metrics="appState.homeMetrics"
-      :loading="appState.homeMetricsLoading"
-      :error="appState.homeMetricsError"
-      @refresh="handleRefreshMetrics"
-    />
-
+  <div class="flex flex-col gap-[16px] p-[20px] text-white overflow-y-auto h-full">
+    <!-- service status -->
     <Card>
-      <div class="flex flex-col gap-4">
+      <div class="flex flex-col gap-[12px]">
         <div class="flex items-start justify-between gap-4">
           <div class="flex flex-col gap-1">
             <div class="text-sm" :class="appViewState.serviceStatusClass">
               {{ appViewState.serviceStatusText }}
             </div>
           </div>
-          <div class="center-row gap-2">
-            <Button variant="primary" :disabled="appState.serviceBusy" @click="handleToggleService">
-              <span class="icon-[mdi--pause] text-[16px]" v-if="appState.serviceRunning"></span>
-              <span class="icon-[mdi--play] text-[16px]" v-else></span>
-              <span> {{ appViewState.serviceButtonText }}</span>
-            </Button>
-          </div>
+          <Button variant="primary" :disabled="appState.serviceBusy" @click="handleToggleService">
+            <span class="icon-[mdi--pause] text-[16px]" v-if="appState.serviceRunning"></span>
+            <span class="icon-[mdi--play] text-[16px]" v-else></span>
+            <span> {{ appViewState.serviceButtonText }}</span>
+          </Button>
         </div>
 
         <div v-if="appState.serviceLastError"
-          class="rounded-[8px] border border-[#4b1d1d] bg-[#2a1313] px-3 py-2 text-sm text-[#fca5a5]">
+          class="rounded-[4px] border border-[#ff4444]/30 bg-[#ff4444]/5 px-3 py-2 text-sm text-[#ff4444]"
+        >
           {{ appState.serviceLastError }}
         </div>
 
@@ -123,13 +116,22 @@ onMounted(() => {
       </div>
     </Card>
 
+    <!-- metrics -->
+    <HomeMetricsCard
+      :metrics="appState.homeMetrics"
+      :loading="appState.homeMetricsLoading"
+      :error="appState.homeMetricsError"
+      @refresh="handleRefreshMetrics"
+    />
+
+    <!-- quick actions -->
     <Card>
       <div class="flex items-center justify-between gap-4">
         <div>
-          <h2 class="text-base font-medium text-white">本地配置</h2>
-          <div class="text-sm text-[#a3a3a3]">打开设置目录，或单独管理模型配置</div>
+          <h2 class="text-[14px] font-medium text-white">本地配置</h2>
+          <div class="text-[12px] text-[#a8a8a8]">打开设置目录，或单独管理模型配置</div>
         </div>
-        <div class="center-row gap-2">
+        <div class="flex items-center gap-2">
           <Button variant="default" @click="handleOpenConfig">设置文件夹</Button>
           <Button variant="primary" @click="handleOpenModelConfig">模型配置</Button>
         </div>

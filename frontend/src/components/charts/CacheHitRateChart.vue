@@ -77,7 +77,7 @@ const chartData = computed(() => ({
   datasets: [
     {
       data: [percentage.value, Math.max(0, 100 - percentage.value)],
-      backgroundColor: ["#4ade80", "#373737"],
+      backgroundColor: ["#ffffff", "#2a2a2a"],
       borderWidth: 0,
       hoverBorderWidth: 0,
       selfJoin: false,

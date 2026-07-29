@@ -276,7 +276,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="flex h-full flex-col text-[#e5e5e5]">
+  <div class="flex h-full flex-col text-white">
     <div class="flex shrink-0 items-center justify-between px-4 pb-2">
       <h2 class="text-base font-medium text-white">{{ title }}</h2>
       <div class="flex items-center gap-2">
@@ -290,7 +290,7 @@ onMounted(async () => {
       </div>
     </div>
 
-    <div v-if="loading" class="flex flex-1 items-center justify-center text-sm text-[#a3a3a3]">
+    <div v-if="loading" class="flex flex-1 items-center justify-center text-sm text-[#a8a8a8]">
       加载中...
     </div>
 
@@ -303,8 +303,8 @@ onMounted(async () => {
             type="button"
             class="center-row gap-2 rounded-[8px] border px-3 py-2 text-sm transition-colors duration-150"
             :class="draft.type === tab.value
-              ? 'border-[#1ca35a] bg-[#123322] text-white'
-              : 'border-[#343434] bg-[#252525] text-[#a3a3a3] hover:border-[#4a4a4a] hover:text-[#e5e5e5]'"
+              ? 'border-white bg-white/10 text-white'
+              : 'border-[#2a2a2a] bg-[#141414] text-[#a8a8a8] hover:border-[#666] hover:text-white'"
             @click="handleModelTypeChange(tab.value)"
           >
             <span :class="[tab.icon, 'text-[16px]']"></span>
@@ -314,7 +314,7 @@ onMounted(async () => {
 
         <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
           <label class="flex flex-col gap-1">
-            <span class="center-row justify-start gap-1.5 text-sm text-[#d4d4d4]">
+            <span class="center-row justify-start gap-1.5 text-sm text-[#a8a8a8]">
               <Tooltip :content="fieldTips.displayName" />
               <span>显示名称</span>
             </span>
@@ -322,12 +322,12 @@ onMounted(async () => {
               v-model="draft.displayName"
               type="text"
               placeholder="例如：OpenAI - GPT-4.1"
-              class="h-9 rounded-[6px] border border-[#3f3f3f] bg-[#232323] px-3 text-sm text-[#e5e5e5] outline-none focus:border-[#10AD5D]"
+              class="h-9 rounded-[4px] border border-[#383838] bg-[#141414] px-3 text-sm text-white outline-none focus:border-white"
             />
           </label>
 
           <label class="flex flex-col gap-1">
-            <span class="center-row justify-start gap-1.5 text-sm text-[#d4d4d4]">
+            <span class="center-row justify-start gap-1.5 text-sm text-[#a8a8a8]">
               <Tooltip :content="fieldTips.modelID" />
               <span>模型标识</span>
             </span>
@@ -335,12 +335,12 @@ onMounted(async () => {
               v-model="draft.modelID"
               type="text"
               placeholder="例如：gpt-4.1"
-              class="h-9 rounded-[6px] border border-[#3f3f3f] bg-[#232323] px-3 text-sm text-[#e5e5e5] outline-none focus:border-[#10AD5D]"
+              class="h-9 rounded-[4px] border border-[#383838] bg-[#141414] px-3 text-sm text-white outline-none focus:border-white"
             />
           </label>
 
           <label class="flex flex-col gap-1">
-            <span class="center-row justify-start gap-1.5 text-sm text-[#d4d4d4]">
+            <span class="center-row justify-start gap-1.5 text-sm text-[#a8a8a8]">
               <Tooltip :content="fieldTips.apiKey" />
               <span>访问密钥</span>
             </span>
@@ -354,7 +354,7 @@ onMounted(async () => {
           </label>
 
           <label class="flex flex-col gap-1">
-            <span class="center-row justify-start gap-1.5 text-sm text-[#d4d4d4]">
+            <span class="center-row justify-start gap-1.5 text-sm text-[#a8a8a8]">
               <Tooltip :content="fieldTips.baseURL" />
               <span>接口地址</span>
             </span>
@@ -362,12 +362,12 @@ onMounted(async () => {
               v-model="draft.baseURL"
               type="text"
               :placeholder="interfacePlaceholder"
-              class="h-9 rounded-[6px] border border-[#3f3f3f] bg-[#232323] px-3 text-sm text-[#e5e5e5] outline-none focus:border-[#10AD5D]"
+              class="h-9 rounded-[4px] border border-[#383838] bg-[#141414] px-3 text-sm text-white outline-none focus:border-white"
             />
           </label>
 
           <label class="flex flex-col gap-1">
-            <span class="center-row justify-start gap-1.5 text-sm text-[#d4d4d4]">
+            <span class="center-row justify-start gap-1.5 text-sm text-[#a8a8a8]">
               <Tooltip :content="fieldTips.contextWindowTokens" />
               <span>上下文窗口</span>
             </span>
@@ -376,12 +376,12 @@ onMounted(async () => {
               type="text"
               inputmode="numeric"
               placeholder="例如：200000（留空用默认值）"
-              class="h-9 rounded-[6px] border border-[#3f3f3f] bg-[#232323] px-3 text-sm text-[#e5e5e5] outline-none focus:border-[#10AD5D]"
+              class="h-9 rounded-[4px] border border-[#383838] bg-[#141414] px-3 text-sm text-white outline-none focus:border-white"
             />
           </label>
 
           <label v-if="draft.type === 'openai'" class="flex flex-col gap-1">
-            <span class="center-row justify-start gap-1.5 text-sm text-[#d4d4d4]">
+            <span class="center-row justify-start gap-1.5 text-sm text-[#a8a8a8]">
               <Tooltip :content="fieldTips.reasoningEffort" />
               <span>推理强度</span>
             </span>
@@ -392,7 +392,7 @@ onMounted(async () => {
           </label>
 
           <label v-if="draft.type === 'anthropic'" class="flex flex-col gap-1">
-            <span class="center-row justify-start gap-1.5 text-sm text-[#d4d4d4]">
+            <span class="center-row justify-start gap-1.5 text-sm text-[#a8a8a8]">
               <Tooltip :content="fieldTips.anthropicMaxTokens" />
               <span>最大输出 Token</span>
             </span>
@@ -401,12 +401,12 @@ onMounted(async () => {
               type="text"
               inputmode="numeric"
               placeholder="例如：65536（留空用默认值）"
-              class="h-9 rounded-[6px] border border-[#3f3f3f] bg-[#232323] px-3 text-sm text-[#e5e5e5] outline-none focus:border-[#10AD5D]"
+              class="h-9 rounded-[4px] border border-[#383838] bg-[#141414] px-3 text-sm text-white outline-none focus:border-white"
             />
           </label>
 
           <label v-if="draft.type === 'anthropic'" class="flex flex-col gap-1">
-            <span class="center-row justify-start gap-1.5 text-sm text-[#d4d4d4]">
+            <span class="center-row justify-start gap-1.5 text-sm text-[#a8a8a8]">
               <Tooltip :content="fieldTips.anthropicThinkingEffort" />
               <span>思考强度</span>
             </span>
@@ -420,7 +420,7 @@ onMounted(async () => {
 
         <div v-if="draft.type === 'openai'" class="grid grid-cols-1 gap-3 md:grid-cols-2">
           <label class="flex flex-col gap-1">
-            <span class="center-row justify-start gap-1.5 text-sm text-[#d4d4d4]">
+            <span class="center-row justify-start gap-1.5 text-sm text-[#a8a8a8]">
               <Tooltip :content="fieldTips.maxCompletionTokens" />
               <span>最大输出 Token</span>
             </span>
@@ -429,12 +429,12 @@ onMounted(async () => {
               type="text"
               inputmode="numeric"
               placeholder="例如：65536（留空用默认值）"
-              class="h-9 rounded-[6px] border border-[#3f3f3f] bg-[#232323] px-3 text-sm text-[#e5e5e5] outline-none focus:border-[#10AD5D]"
+              class="h-9 rounded-[4px] border border-[#383838] bg-[#141414] px-3 text-sm text-white outline-none focus:border-white"
             />
           </label>
 
           <label class="flex flex-col gap-1">
-            <span class="center-row justify-start gap-1.5 text-sm text-[#d4d4d4]">
+            <span class="center-row justify-start gap-1.5 text-sm text-[#a8a8a8]">
               <Tooltip :content="fieldTips.openAIEndpoint" />
               <span>接口端点</span>
             </span>
@@ -445,17 +445,17 @@ onMounted(async () => {
           </label>
         </div>
 
-        <div v-if="draft.type === 'openai'" class="rounded-[8px] border border-[#343434] bg-[#252525] p-3">
+        <div v-if="draft.type === 'openai'" class="rounded-[8px] border border-[#2a2a2a] bg-[#141414] p-3">
           <div class="flex items-center justify-between gap-3">
-            <span class="center-row justify-start gap-1.5 text-sm text-[#d4d4d4]">
+            <span class="center-row justify-start gap-1.5 text-sm text-[#a8a8a8]">
               <Tooltip :content="fieldTips.openAIExtraParams" />
               <span>额外参数 JSON</span>
             </span>
-            <label class="center-row gap-2 text-xs text-[#d4d4d4]">
+            <label class="center-row gap-2 text-xs text-[#a8a8a8]">
               <input
                 v-model="draft.openAIExtraParamsEnabled"
                 type="checkbox"
-                class="size-4 accent-[#10AD5D]"
+                class="size-4 accent-white"
               />
               <span>启用</span>
             </label>
@@ -465,21 +465,21 @@ onMounted(async () => {
             v-model="draft.openAIExtraParamsJSON"
             rows="5"
             spellcheck="false"
-            class="mt-3 min-h-[120px] w-full resize-none rounded-[6px] border border-[#3f3f3f] bg-[#1f1f1f] px-3 py-2 font-mono text-xs text-[#e5e5e5] outline-none focus:border-[#10AD5D]"
+            class="mt-3 min-h-[120px] w-full resize-none rounded-[4px] border border-[#383838] bg-[#141414] px-3 py-2 font-mono text-xs text-white outline-none focus:border-white"
           />
         </div>
 
-        <div v-if="draft.type === 'anthropic'" class="rounded-[8px] border border-[#343434] bg-[#252525] p-3">
+        <div v-if="draft.type === 'anthropic'" class="rounded-[8px] border border-[#2a2a2a] bg-[#141414] p-3">
           <div class="flex items-center justify-between gap-3">
-            <span class="center-row justify-start gap-1.5 text-sm text-[#d4d4d4]">
+            <span class="center-row justify-start gap-1.5 text-sm text-[#a8a8a8]">
               <Tooltip :content="fieldTips.anthropicExtraParams" />
               <span>Anthropic 额外参数 JSON</span>
             </span>
-            <label class="center-row gap-2 text-xs text-[#d4d4d4]">
+            <label class="center-row gap-2 text-xs text-[#a8a8a8]">
               <input
                 v-model="draft.anthropicExtraParamsEnabled"
                 type="checkbox"
-                class="size-4 accent-[#10AD5D]"
+                class="size-4 accent-white"
               />
               <span>启用</span>
             </label>
@@ -489,21 +489,21 @@ onMounted(async () => {
             v-model="draft.anthropicExtraParamsJSON"
             rows="5"
             spellcheck="false"
-            class="mt-3 min-h-[120px] w-full resize-none rounded-[6px] border border-[#3f3f3f] bg-[#1f1f1f] px-3 py-2 font-mono text-xs text-[#e5e5e5] outline-none focus:border-[#10AD5D]"
+            class="mt-3 min-h-[120px] w-full resize-none rounded-[4px] border border-[#383838] bg-[#141414] px-3 py-2 font-mono text-xs text-white outline-none focus:border-white"
           />
         </div>
 
-        <div class="rounded-[8px] border border-[#343434] bg-[#252525] p-3">
+        <div class="rounded-[8px] border border-[#2a2a2a] bg-[#141414] p-3">
           <div class="flex items-center justify-between gap-3">
-            <span class="center-row justify-start gap-1.5 text-sm text-[#d4d4d4]">
+            <span class="center-row justify-start gap-1.5 text-sm text-[#a8a8a8]">
               <Tooltip :content="fieldTips.customHeaders" />
               <span>自定义请求头 JSON</span>
             </span>
-            <label class="center-row gap-2 text-xs text-[#d4d4d4]">
+            <label class="center-row gap-2 text-xs text-[#a8a8a8]">
               <input
                 v-model="draft.customHeadersEnabled"
                 type="checkbox"
-                class="size-4 accent-[#10AD5D]"
+                class="size-4 accent-white"
               />
               <span>启用</span>
             </label>
@@ -513,12 +513,12 @@ onMounted(async () => {
             v-model="draft.customHeadersJSON"
             rows="5"
             spellcheck="false"
-            class="mt-3 min-h-[120px] w-full resize-none rounded-[6px] border border-[#3f3f3f] bg-[#1f1f1f] px-3 py-2 font-mono text-xs text-[#e5e5e5] outline-none focus:border-[#10AD5D]"
+            class="mt-3 min-h-[120px] w-full resize-none rounded-[4px] border border-[#383838] bg-[#141414] px-3 py-2 font-mono text-xs text-white outline-none focus:border-white"
           />
         </div>
 
         <label class="flex flex-col gap-1">
-          <span class="center-row justify-start gap-1.5 text-sm text-[#d4d4d4]">
+          <span class="center-row justify-start gap-1.5 text-sm text-[#a8a8a8]">
             <Tooltip :content="fieldTips.tooltipData" />
             <span>备注</span>
           </span>
@@ -526,7 +526,7 @@ onMounted(async () => {
             v-model="draft.tooltipData"
             rows="3"
             placeholder="例如：用于日常代码补全与问答"
-            class="min-h-[96px] resize-none rounded-[6px] border border-[#3f3f3f] bg-[#232323] px-3 py-2 text-sm text-[#e5e5e5] outline-none focus:border-[#10AD5D]"
+            class="min-h-[96px] resize-none rounded-[4px] border border-[#383838] bg-[#141414] px-3 py-2 text-sm text-white outline-none focus:border-white"
           />
         </label>
 
@@ -538,7 +538,7 @@ onMounted(async () => {
 
         <div
           v-if="errorMessage"
-          class="rounded-[8px] border border-[#4b1d1d] bg-[#2a1313] px-3 py-2 text-sm text-[#fca5a5]"
+          class="rounded-[8px] border border-[#555]/30 bg-[#141414] px-3 py-2 text-sm text-white"
         >
           {{ errorMessage }}
         </div>

@@ -62,40 +62,40 @@ const rawResponseText = computed(() => {
 
 const panelClass = computed(() => {
   if (props.stale) {
-    return "border-[#6b5b1e] bg-[#2c2612]";
+    return "border-[#333] bg-[#0f0f0f]";
   }
   if (normalizedStatus.value === "running") {
-    return "border-[#164e63] bg-[#0b2530]";
+    return "border-[#444] bg-[#141414]";
   }
   if (normalizedStatus.value === "error") {
-    return "border-[#4b1d1d] bg-[#2a1313]";
+    return "border-[#555] bg-[#141414]";
   }
   if (normalizedStatus.value === "success" && props.result?.tokensEstimated) {
-    return "border-[#5a4314] bg-[#2f2612]";
+    return "border-[#444] bg-[#1c1c1c]";
   }
   if (normalizedStatus.value === "success") {
-    return "border-[#14532d] bg-[#102418]";
+    return "border-[#555] bg-[#1c1c1c]";
   }
-  return "border-[#343434] bg-[#232323]";
+  return "border-[#343434] bg-[#1c1c1c]";
 });
 
 const summaryClass = computed(() => {
   if (props.stale) {
-    return "text-[#f6d77a]";
+    return "text-[#666]";
   }
   if (normalizedStatus.value === "running") {
-    return "text-[#67e8f9]";
+    return "text-[#a8a8a8]";
   }
   if (normalizedStatus.value === "error") {
-    return "text-[#fca5a5]";
+    return "text-white";
   }
   if (normalizedStatus.value === "success" && props.result?.tokensEstimated) {
-    return "text-[#fcd34d]";
+    return "text-[#a8a8a8]";
   }
   if (normalizedStatus.value === "success") {
-    return "text-[#86efac]";
+    return "text-white";
   }
-  return "text-[#a3a3a3]";
+  return "text-[#a8a8a8]";
 });
 </script>
 
@@ -109,7 +109,7 @@ const summaryClass = computed(() => {
           >
             {{ title }}
           </div>
-          <div v-if="rawResponseText" class="center-row gap-1 text-[11px] text-[#8f8f8f]">
+          <div v-if="rawResponseText" class="center-row gap-1 text-[11px] text-[#666]">
             <span>原始返回</span>
             <Tooltip :content="rawResponseText" copyable />
           </div>
@@ -120,13 +120,13 @@ const summaryClass = computed(() => {
       </div>
       <span
         v-if="stale"
-        class="shrink-0 rounded-[999px] border border-[#8a6d1a] px-2 py-1 text-xs text-[#f6d77a]"
+        class="shrink-0 rounded-[999px] border border-[#444] px-2 py-1 text-xs text-[#a8a8a8]"
       >
         需重测
       </span>
     </div>
 
-    <div v-if="stale" class="mt-2 text-xs text-[#f6d77a]">
+    <div v-if="stale" class="mt-2 text-xs text-[#666]">
       配置已变更，请重新测试
     </div>
 
@@ -136,17 +136,17 @@ const summaryClass = computed(() => {
     >
       <div class="rounded-[8px] bg-[#1c1c1c] px-3 py-2">
         <div class="text-[11px] uppercase tracking-[0.08em] text-[#666]">总耗时</div>
-        <div class="mt-1 text-sm text-[#d4d4d4]">{{ formatDuration(result?.totalDurationMS) }}</div>
+        <div class="mt-1 text-sm text-white">{{ formatDuration(result?.totalDurationMS) }}</div>
       </div>
       <div class="rounded-[8px] bg-[#1c1c1c] px-3 py-2">
         <div class="text-[11px] uppercase tracking-[0.08em] text-[#666]">输出 Token</div>
-        <div class="mt-1 text-sm text-[#d4d4d4]">{{ result?.outputTokens ?? 0 }}</div>
+        <div class="mt-1 text-sm text-white">{{ result?.outputTokens ?? 0 }}</div>
       </div>
     </div>
 
     <div
       v-if="normalizedStatus === 'success' && result?.tokensEstimated"
-      class="mt-2 text-xs text-[#8f8f8f]"
+      class="mt-2 text-xs text-[#666]"
     >
       输出 Token 为估算值
     </div>

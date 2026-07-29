@@ -5,10 +5,8 @@ import { appState, syncServiceState } from "@/state/appState";
 import { isWindows } from "@/utils/isWindows";
 import { computed, onMounted, onUnmounted } from "vue";
 import { useRoute } from "vue-router";
-import Logo from "@/assets/logo.png";
 
 const route = useRoute();
-const showIcon = computed(() => route.meta.showIcon !== false);
 const title = computed(() => route.meta.title ?? "Local-Curosr");
 const directlyClose = computed(() => route.meta.directlyClose === true);
 const showFooter = computed(() => route.path === "/");
@@ -70,66 +68,86 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="flex h-screen w-screen overflow-hidden flex-col">
+  <div class="flex h-screen w-screen overflow-hidden">
+    <!-- drag region for frameless window -->
     <div
-      class="fixed top-0 w-screen h-[40px] z-9999 w-full"
-      style="--wails-draggable: drag"
+      class="fixed top-0 left-0 h-[40px] z-9999"
+      style="--wails-draggable: drag; width: 52px;"
     ></div>
 
-    <header
-      class="flex h-[40px] center-row px-[20px] w-full min-h-0 shrink-0 justify-between relative"
-      style="--wails-draggable: drag"
-      :class="{ '!justify-center': !isWindows }"
-    >
-      <div class="center-row gap-2" style="font-family: var(--font-num);">
-        <img v-if="showIcon" :src="Logo" class="w-[18px] h-[18px]" />
-        <div>{{ title }}</div>
+    <!-- ═══ SIDEBAR ═══ -->
+    <nav class="flex flex-col items-center w-[52px] shrink-0 bg-[#0a0a0a] border-r border-[#2a2a2a] pt-[12px] gap-[4px] z-50">
+      <div class="flex items-center justify-center w-[28px] h-[28px] border-[1.5px] border-white rounded-[6px] font-extrabold text-[13px] tracking-tight mb-[16px]">
+        LC
       </div>
-      <div
-        v-if="isWindows"
-        class="absolute right-[10px] top-[8px] z-99999 center-row gap-[1px]"
-      >
-        <button
-          class="text-[20px] center-row justify-center w-[30px] h-[23px] rounded-[4px] text-[#777] hover:bg-[#333] hover:text-[#ddd] cursor-pointer"
-          @click="minimizeWindow"
-        >
-          <span class="icon-[ic--round-minus]"></span>
-        </button>
-        <button
-          class="text-[20px] center-row justify-center w-[30px] h-[23px] rounded-[4px] text-[#777] hover:bg-[#333] hover:text-[#ddd] cursor-pointer"
-          @click="closeWindow"
-        >
-          <span class="icon-[ic--round-close]"></span>
-        </button>
-      </div>
-    </header>
-
-    <main class="flex-1 min-h-0 overflow-hidden flex flex-col w-full">
-      <router-view />
-    </main>
-
-    <footer
-      v-if="showFooter"
-      class="flex !pr-1 h-[30px] shrink-0 items-center gap-[8px] border-t border-[#242424] px-[14px] text-[12px] text-[#8f8f8f]"
-    >
-      <div
-        v-if="proxyBadgeText"
-        class="center-row  border-none gap-[2px]  border-none  px-[0px] py-[3px] leading-none "
-        aria-live="polite"
-      >
-        <span class="icon-[mdi--wifi] text-[15px]"></span>
-        <span class="truncate">{{ proxyBadgeText }}</span>
-      </div>
-      <div class="ml-auto flex shrink-0 items-center gap-[8px]">
-        <span v-if="appState.appVersion" class="text-[12px] text-[#666] tabular-nums">v{{ appState.appVersion }}</span>
+      <div class="flex-1"></div>
+      <!-- nav buttons handled by router -->
+      <!-- bottom: language + version -->
+      <div class="flex flex-col items-center gap-[6px] pb-[10px]">
         <LocaleSelect
           :border="false"
           aria-label="界面语言"
           wrapper-class="w-auto"
-          button-class="h-[24px] bg-transparent px-1.5 text-[12px] !text-[#8f8f8f] !hover:text-[#e5e5e5]"
+          button-class="h-[24px] bg-transparent px-1.5 text-[12px] !text-[#666] !hover:text-[#fff]"
           menu-class="text-[12px]"
         />
+        <span v-if="appState.appVersion" class="text-[10px] tabular-nums text-[#444] leading-none">
+          v{{ appState.appVersion }}
+        </span>
       </div>
-    </footer>
+    </nav>
+
+    <!-- ═══ MAIN ═══ -->
+    <div class="flex flex-1 min-w-0 flex-col">
+      <!-- topbar -->
+      <header
+        class="flex h-[40px] shrink-0 items-center justify-between px-[16px] bg-black border-b border-[#2a2a2a] relative"
+        style="--wails-draggable: drag"
+      >
+        <span class="font-semibold text-[13px] tracking-wide">{{ title }}</span>
+        <div
+          v-if="isWindows"
+          class="absolute right-[10px] top-[8px] flex items-center gap-[1px] z-99999"
+        >
+          <button
+            class="flex items-center justify-center w-[30px] h-[23px] rounded-[4px] text-[#666] hover:bg-[#1c1c1c] hover:text-white cursor-pointer"
+            @click="minimizeWindow"
+          >
+            <span class="icon-[ic--round-minus] text-[20px]"></span>
+          </button>
+          <button
+            class="flex items-center justify-center w-[30px] h-[23px] rounded-[4px] text-[#666] hover:bg-[#1c1c1c] hover:text-white cursor-pointer"
+            @click="closeWindow"
+          >
+            <span class="icon-[ic--round-close] text-[20px]"></span>
+          </button>
+        </div>
+      </header>
+
+      <!-- content -->
+      <main class="flex-1 min-h-0 overflow-hidden flex flex-col">
+        <router-view />
+      </main>
+
+      <!-- statusbar (only on home) -->
+      <footer
+        v-if="showFooter"
+        class="flex h-[28px] shrink-0 items-center justify-between px-[12px] border-t border-[#2a2a2a] bg-[#0a0a0a] text-[10px] text-[#666]"
+      >
+        <div class="flex items-center gap-[12px]">
+          <span>{{ appState.serviceRunning ? "● 服务运行中" : "● 服务已停止" }}</span>
+        </div>
+        <div class="flex items-center gap-[12px]">
+          <span
+            v-if="proxyBadgeText"
+            class="flex items-center gap-[2px]"
+            :title="proxyBadgeTitle"
+          >
+            <span class="icon-[mdi--wifi] text-[15px]"></span>
+            <span class="truncate">{{ proxyBadgeText }}</span>
+          </span>
+        </div>
+      </footer>
+    </div>
   </div>
 </template>
