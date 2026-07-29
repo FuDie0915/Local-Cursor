@@ -1,0 +1,13 @@
+[Desktop Entry]
+Version=1.0
+Name=Local-Curosr
+Comment=Local-Curosr
+# The Exec line includes %u to pass the URL to the application
+Exec=/usr/local/bin/Local-Curosr %u
+Terminal=false
+Type=Application
+Icon=Local-Curosr
+Categories=Utility;
+StartupWMClass=Local-Curosr
+
+ 
