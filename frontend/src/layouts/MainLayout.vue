@@ -7,7 +7,7 @@ import { computed, onMounted, onUnmounted } from "vue";
 import { useRoute } from "vue-router";
 
 const route = useRoute();
-const title = computed(() => route.meta.title ?? "Local-Curosr");
+const title = computed(() => route.meta.title ?? "Local-Cursor — Based on Cursor-BYOK");
 const directlyClose = computed(() => route.meta.directlyClose === true);
 const showFooter = computed(() => route.path === "/");
 let proxyStateTimer = null;
@@ -77,7 +77,9 @@ onUnmounted(() => {
 
     <!-- ═══ SIDEBAR ═══ -->
     <nav class="flex flex-col items-center w-[52px] shrink-0 bg-[#0a0a0a] border-r border-[#2a2a2a] pt-[12px] gap-[4px] z-50">
-      <div class="flex items-center justify-center w-[28px] h-[28px] border-[1.5px] border-white rounded-[6px] font-extrabold text-[13px] tracking-tight mb-[16px]">
+      <div class="flex items-center justify-center w-[28px] h-[28px] border-[1.5px] border-white rounded-[6px] font-extrabold text-[13px] tracking-tight mb-[16px]"
+        style="--wails-draggable: no-drag"
+      >
         LC
       </div>
       <div class="flex-1"></div>

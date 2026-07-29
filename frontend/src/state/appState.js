@@ -495,6 +495,32 @@ function createEmptyHomeMetrics() {
   };
 }
 
+// ── session-mode baseline (in-memory, per app run) ──
+// 后端始终累积写入 usage.json，baseline 仅用于增量计算的起点快照
+let homeMetricsBaseline = null;
+let homeMetricsRaw = createEmptyHomeMetrics();
+
+function computeDisplayMetrics() {
+  // 持久化模式：直接展示后端累积值
+  if (appState.homeMetricsPersistent) {
+    return { ...homeMetricsRaw };
+  }
+  // 运行时模式：展示本次运行以来的增量；baseline 未就绪时回退到 raw
+  if (!homeMetricsBaseline) {
+    return { ...homeMetricsRaw };
+  }
+  return {
+    turnsTotal: Math.max(0, homeMetricsRaw.turnsTotal - homeMetricsBaseline.turnsTotal),
+    validTurnsTotal: Math.max(0, homeMetricsRaw.validTurnsTotal - homeMetricsBaseline.validTurnsTotal),
+    invalidTurnsTotal: Math.max(0, homeMetricsRaw.invalidTurnsTotal - homeMetricsBaseline.invalidTurnsTotal),
+    requestTokensTotal: Math.max(0, homeMetricsRaw.requestTokensTotal - homeMetricsBaseline.requestTokensTotal),
+    promptTokensTotal: Math.max(0, homeMetricsRaw.promptTokensTotal - homeMetricsBaseline.promptTokensTotal),
+    cacheReadTokens: Math.max(0, homeMetricsRaw.cacheReadTokens - homeMetricsBaseline.cacheReadTokens),
+    cacheWriteTokens: Math.max(0, homeMetricsRaw.cacheWriteTokens - homeMetricsBaseline.cacheWriteTokens),
+    cacheHitRate: null,
+  };
+}
+
 function loadCachedState() {
   if (!canUseLocalStorage()) {
     return {};
@@ -530,6 +556,7 @@ function normalizeConfig(source) {
     },
     homeMetrics: {
       includeCacheWriteInHitRate: asBoolean(homeMetrics.includeCacheWriteInHitRate),
+      persistentMode: asBoolean(homeMetrics.persistentMode, true),
     },
     lastAgentModelHash: asString(raw.lastAgentModelHash),
     tabServerBaseURL: asString(raw.tabServerBaseURL),
@@ -560,7 +587,12 @@ function normalizeHomeMetrics(source) {
 }
 
 function applyHomeMetrics(raw) {
-  appState.homeMetrics = normalizeHomeMetrics(raw);
+  homeMetricsRaw = normalizeHomeMetrics(raw);
+  // 首次拉取时捕获 baseline（仅内存，不持久化）
+  if (!homeMetricsBaseline) {
+    homeMetricsBaseline = { ...homeMetricsRaw };
+  }
+  appState.homeMetrics = computeDisplayMetrics();
   appState.homeMetricsError = "";
 }
 
@@ -591,6 +623,7 @@ function applyConfigToState(config, { modelAdaptersOnly = false } = {}) {
   appState.configProxyListenAddr = normalized.proxyListenAddr;
   appState.routingMode = normalized.routing.mode;
   appState.includeCacheWriteInHitRate = normalized.homeMetrics.includeCacheWriteInHitRate;
+  appState.homeMetricsPersistent = normalized.homeMetrics.persistentMode;
   appState.tabServerBaseURL = normalized.tabServerBaseURL;
   appState.tabServerToken = normalized.tabServerToken;
   return normalized;
@@ -710,6 +743,7 @@ export const appState = reactive({
   configProxyListenAddr: cachedConfig.proxyListenAddr,
   routingMode: cachedConfig.routing.mode,
   includeCacheWriteInHitRate: cachedConfig.homeMetrics.includeCacheWriteInHitRate,
+  homeMetricsPersistent: cachedConfig.homeMetrics.persistentMode,
   tabServerBaseURL: cachedConfig.tabServerBaseURL,
   tabServerToken: cachedConfig.tabServerToken,
 
@@ -887,6 +921,7 @@ export async function persistUserConfig() {
     homeMetrics: {
       ...currentConfig.homeMetrics,
       includeCacheWriteInHitRate: appState.includeCacheWriteInHitRate,
+      persistentMode: appState.homeMetricsPersistent,
     },
     tabServerBaseURL: appState.tabServerBaseURL,
     tabServerToken: appState.tabServerToken,
@@ -907,6 +942,26 @@ export async function saveIncludeCacheWriteInHitRate(value) {
   });
   if (!result.ok) {
     appState.includeCacheWriteInHitRate = previousValue;
+  }
+  return result;
+}
+
+export async function saveHomeMetricsPersistent(value) {
+  const currentConfig = await loadPersistedUserConfig();
+  const previousValue = appState.homeMetricsPersistent;
+  const nextValue = asBoolean(value, true);
+  appState.homeMetricsPersistent = nextValue;
+  appState.homeMetrics = computeDisplayMetrics();
+  const result = await persistConfigPayload({
+    ...currentConfig,
+    homeMetrics: {
+      ...currentConfig.homeMetrics,
+      persistentMode: nextValue,
+    },
+  });
+  if (!result.ok) {
+    appState.homeMetricsPersistent = previousValue;
+    appState.homeMetrics = computeDisplayMetrics();
   }
   return result;
 }

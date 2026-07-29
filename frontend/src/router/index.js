@@ -9,7 +9,7 @@ const router = createRouter({
     {
       path: "/",
       component: Home,
-      meta: { showIcon: true, title: "Local-Curosr", directlyClose: false },
+      meta: { showIcon: true, title: "Local-Cursor — Based on Cursor-BYOK", directlyClose: false },
     },
     {
       path: "/model-config",

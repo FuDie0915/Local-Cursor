@@ -1405,7 +1405,7 @@
       ]
     },
     "991e374fce0f4492": {
-      "source": "Local-Curosr",
+      "source": "Local-Cursor — Based on Cursor-BYOK",
       "kind": "text",
       "placeholders": 0,
       "refs": [

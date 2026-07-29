@@ -2,7 +2,7 @@
 import CacheHitRateChart from "@/components/charts/CacheHitRateChart.vue";
 import Switch from "@/components/ui/Switch.vue";
 import Tooltip from "@/components/ui/Tooltip.vue";
-import { appState, saveIncludeCacheWriteInHitRate } from "@/state/appState";
+import { appState, saveIncludeCacheWriteInHitRate, saveHomeMetricsPersistent } from "@/state/appState";
 import { formatCompactInteger, formatInteger } from "@/utils/numberFormat";
 import { computed, ref } from "vue";
 
@@ -32,6 +32,7 @@ const props = defineProps({
 
 const homeMetricsConfigSaving = ref(false);
 const homeMetricsConfigError = ref("");
+const homeMetricsModeSaving = ref(false);
 
 function normalizeNumber(value) {
   const number = Number(value);
@@ -99,6 +100,25 @@ const cacheReuseRate = computed(() =>
 );
 
 const includeCacheWriteInHitRate = computed(() => appState.includeCacheWriteInHitRate);
+
+const homeMetricsPersistent = computed(() => appState.homeMetricsPersistent);
+
+const homeMetricsModeLabel = computed(() => homeMetricsPersistent.value ? "累计统计" : "本次运行");
+
+async function toggleHomeMetricsPersistent(value) {
+  const nextValue = Boolean(value);
+  homeMetricsModeSaving.value = true;
+  try {
+    const result = await saveHomeMetricsPersistent(nextValue);
+    if (!result?.ok) {
+      homeMetricsConfigError.value = result?.error || "保存失败";
+    }
+  } catch (error) {
+    homeMetricsConfigError.value = error?.message || "保存失败";
+  } finally {
+    homeMetricsModeSaving.value = false;
+  }
+}
 
 const selectedCacheHitRate = computed(() =>
   includeCacheWriteInHitRate.value ? cacheReuseRate.value : defaultCacheHitRate.value,
@@ -209,7 +229,29 @@ async function toggleIncludeCacheWriteInHitRate(value) {
     <div class="flex flex-col gap-4">
       <div class="flex items-center justify-between">
         <h2 class="text-[14px] font-medium text-white/80">会话统计</h2>
-        <div class="flex items-center gap-2 text-xs text-[#666]">
+        <div class="flex items-center gap-3 text-xs text-[#666]">
+          <div class="flex items-center gap-1">
+            <span class="text-[#666]">{{ homeMetricsModeLabel }}</span>
+            <Tooltip>
+              <div class="w-[280px] space-y-2">
+                <Switch
+                  compact
+                  label="累计统计"
+                  description="开启时展示全部历史数据，关闭时仅展示本次运行以来的增量"
+                  enabled-text="当前展示累计数据"
+                  disabled-text="当前展示本次运行增量"
+                  :enabled="homeMetricsPersistent"
+                  :busy="homeMetricsModeSaving"
+                  :disabled="homeMetricsModeSaving"
+                  @change="toggleHomeMetricsPersistent"
+                />
+                <div class="text-[11px] text-[#666] leading-[16px]">
+                  两种模式下后端始终写入持久化数据，切换不会清除历史记录。
+                </div>
+              </div>
+            </Tooltip>
+            <span class="icon-[mdi--chart-timeline-variant-shimmer] text-[14px] text-[#666]"></span>
+          </div>
           <span>刷新统计</span>
           <button
             type="button"
