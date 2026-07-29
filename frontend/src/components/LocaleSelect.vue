@@ -4,6 +4,7 @@ import { useLocale } from "@/i18n/runtime";
 
 const props = defineProps({
   border: { type: Boolean, default: true },
+  compact: { type: Boolean, default: false },
   ariaLabel: { type: String, default: "界面语言" },
   buttonClass: { type: String, default: "" },
   menuClass: { type: String, default: "" },
@@ -20,6 +21,7 @@ const { locale, localeOptions, setLocale } = useLocale();
       :model-value="locale"
       :options="localeOptions"
       :border="border"
+      :compact="compact"
       :aria-label="ariaLabel"
       :button-class="buttonClass"
       :menu-class="menuClass"

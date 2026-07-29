@@ -277,7 +277,7 @@ onMounted(async () => {
 
 <template>
   <div class="flex h-full flex-col text-white">
-    <div class="flex shrink-0 items-center justify-between px-4 pb-2">
+    <div class="flex shrink-0 items-center justify-between px-4 pt-2 pb-2">
       <h2 class="text-base font-medium text-white">{{ title }}</h2>
       <div class="flex items-center gap-2">
         <Button variant="default" @click="handleCancel">取消</Button>

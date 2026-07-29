@@ -85,11 +85,12 @@ onUnmounted(() => {
       <!-- bottom: language + version -->
       <div class="flex flex-col items-center gap-[6px] pb-[10px]">
         <LocaleSelect
+          compact
           :border="false"
           aria-label="界面语言"
-          wrapper-class="w-auto"
-          button-class="h-[24px] bg-transparent px-1.5 text-[12px] !text-[#666] !hover:text-[#fff]"
-          menu-class="text-[12px]"
+          wrapper-class="w-full"
+          button-class="!h-[24px] !w-full !bg-transparent !px-1 !text-[12px] !text-[#666] hover:!text-[#fff]"
+          menu-class="text-[12px] min-w-[120px]"
         />
         <span v-if="appState.appVersion" class="text-[10px] tabular-nums text-[#444] leading-none">
           v{{ appState.appVersion }}

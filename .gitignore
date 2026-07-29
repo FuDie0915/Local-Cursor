@@ -4,6 +4,7 @@ dist
 bin
 logs/
 gen/
+*.syso
 logs.zip
 frontend/bindings
 dist

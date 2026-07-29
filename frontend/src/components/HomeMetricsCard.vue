@@ -207,13 +207,9 @@ async function toggleIncludeCacheWriteInHitRate(value) {
 <template>
   <div>
     <div class="flex flex-col gap-4">
-      <div class="flex items-center justify-between gap-4 h-[42px]">
-        <div class="flex flex-col gap-1 w-[200px] shrink-0">
-          <h2 class="text-[14px] font-medium text-white/80">会话统计</h2>
-        </div>
-        <div
-          class="flex-1 flex items-center justify-end shrink-0 gap-2 text-xs text-[#666] pr-4 w-[200px]"
-        >
+      <div class="flex items-center justify-between">
+        <h2 class="text-[14px] font-medium text-white/80">会话统计</h2>
+        <div class="flex items-center gap-2 text-xs text-[#666]">
           <span>刷新统计</span>
           <button
             type="button"
@@ -231,9 +227,9 @@ async function toggleIncludeCacheWriteInHitRate(value) {
       </div>
 
       <div
-        class="mt-[-4px] grid grid-cols-4 gap-0 overflow-hidden rounded-[8px] border border-[#2a2a2a] bg-[#0a0a0a] h-[130px]"
+        class="grid grid-cols-4 gap-0 overflow-hidden rounded-[8px] border border-[#2a2a2a] bg-[#0a0a0a] min-h-[130px]"
       >
-        <div class="min-w-0 px-4 py-4 flex flex-col justify-between">
+        <div class="min-w-0 px-4 py-4 flex flex-col gap-3">
           <div class="flex items-center justify-start gap-1 text-xs text-[#666]">
             <span>缓存命中率</span>
             <Tooltip>

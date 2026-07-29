@@ -219,7 +219,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="flex h-full min-h-0 flex-col p-4 pt-0 text-white overflow-hidden">
+  <div class="flex h-full min-h-0 flex-col p-4 text-white overflow-hidden">
     <div class="shrink-0 pb-4">
       <div class="flex items-center justify-between gap-4">
         <div class="center-row gap-2">

@@ -11,6 +11,7 @@ const props = defineProps({
   placeholder: { type: String, default: "请选择" },
   disabled: { type: Boolean, default: false },
   border: { type: Boolean, default: true },
+  compact: { type: Boolean, default: false },
   ariaLabel: { type: String, default: "" },
   buttonClass: { type: String, default: "" },
   menuClass: { type: String, default: "" },
@@ -265,7 +266,9 @@ onBeforeUnmount(() => {
       :class="[
         border
           ? 'w-full justify-between gap-2 border border-[#383838] focus:border-white'
-          : 'w-auto justify-start gap-2 border border-transparent focus-visible:ring-2 focus-visible:ring-white/30',
+          : compact
+            ? 'w-full justify-center gap-1 border border-transparent focus-visible:ring-2 focus-visible:ring-white/30'
+            : 'w-auto justify-start gap-2 border border-transparent focus-visible:ring-2 focus-visible:ring-white/30',
         buttonClass,
       ]"
       :aria-expanded="isOpen"
@@ -277,7 +280,7 @@ onBeforeUnmount(() => {
       <span
         class="flex min-w-0 items-center gap-2"
         :class="[
-          border ? 'flex-1' : 'shrink-0',
+          border ? 'flex-1' : compact ? 'min-w-0 flex-1' : 'shrink-0',
           selectedOption
             ? (border ? 'text-white' : 'text-current')
             : 'text-[#666]',
@@ -287,6 +290,7 @@ onBeforeUnmount(() => {
         <span class="truncate">{{ selectedLabel }}</span>
       </span>
       <span
+        v-if="!compact"
         class="pointer-events-none center-row transition-transform duration-200"
         :class="[border ? 'text-[#666]' : 'text-current', isOpen ? 'rotate-180' : '']"
       >
