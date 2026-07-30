@@ -223,7 +223,7 @@ func WriteCLIProxyWrapper(cliHTTPSAddr, caCertPath string) error {
 	return nil
 }
 
-// ClearCLIProxyWrapper 移除 wrapper 脚本和 preload 脚本。
+// ClearCLIProxyWrapper 移除 wrapper 脚本、preload 脚本和终端初始化脚本。
 func ClearCLIProxyWrapper() error {
 	wrapperPath := CLIWrapperPath()
 	if _, err := os.Stat(wrapperPath); err != nil {
@@ -243,7 +243,17 @@ func ClearCLIProxyWrapper() error {
 		return fmt.Errorf("移除 preload 脚本失败: %w", err)
 	}
 
-	logger.Infof("clearCLIProxyWrapper: removed wrapper=%s preload=%s", wrapperPath, preloadPath)
+	// 清理 Windows 终端初始化批处理脚本
+	terminalInitPath := filepath.Join(CLIWrapperDir(), "cli-terminal-init.bat")
+	if _, err := os.Stat(terminalInitPath); err != nil {
+		if !os.IsNotExist(err) {
+			return err
+		}
+	} else if err := os.Remove(terminalInitPath); err != nil {
+		return fmt.Errorf("移除终端初始化脚本失败: %w", err)
+	}
+
+	logger.Infof("clearCLIProxyWrapper: removed wrapper=%s preload=%s terminal_init=%s", wrapperPath, preloadPath, terminalInitPath)
 	return nil
 }
 

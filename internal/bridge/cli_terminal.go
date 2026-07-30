@@ -9,10 +9,8 @@ import (
 
 	goruntime "runtime"
 
-	"cursor/internal/appdata"
 	"cursor/internal/cursor"
 	"cursor/internal/logger"
-	localruntime "cursor/internal/runtime"
 )
 
 // CLITerminalResult 返回打开 CLI 终端的结果。
@@ -20,6 +18,29 @@ type CLITerminalResult struct {
 	Ok         bool   `json:"ok"`
 	Error      string `json:"error"`
 	WrapperDir string `json:"wrapperDir"`
+}
+
+// cliTerminalInitFilename 是 Windows 终端初始化批处理脚本的文件名。
+const cliTerminalInitFilename = "cli-terminal-init.bat"
+
+// extractEnvSetupLines 从 wrapper 脚本提取环境变量设置行。
+// wrapper 是 CLI 环境配置的唯一来源，终端初始化脚本从中派生，
+// 避免两套独立的环境变量配置逻辑产生不一致。
+func extractEnvSetupLines(wrapperPath string) ([]string, error) {
+	data, err := os.ReadFile(wrapperPath)
+	if err != nil {
+		return nil, err
+	}
+	var lines []string
+	for _, line := range strings.Split(string(data), "\n") {
+		trimmed := strings.TrimSpace(line)
+		if strings.HasPrefix(trimmed, "set \"") || // Windows: set "KEY=VALUE"
+			strings.HasPrefix(trimmed, "export ") || // Unix: export KEY="VALUE"
+			strings.HasPrefix(trimmed, "unset ") { // Unix: unset KEY
+			lines = append(lines, trimmed)
+		}
+	}
+	return lines, nil
 }
 
 // OpenCLITerminal 检测终端并打开一个预配置 wrapper 环境的终端窗口。
@@ -47,9 +68,8 @@ func (s *WindowService) OpenCLITerminal() CLITerminalResult {
 	}
 
 	wrapperDir := cursor.CLIWrapperDir()
-	caCertPath := filepath.Join(appdata.RootDir(), "cursor-local-ca.crt")
 
-	if err := openElevatedTerminal(wrapperDir, caCertPath); err != nil {
+	if err := openElevatedTerminal(wrapperDir); err != nil {
 		logger.Errorf("openCLITerminal failed: %v", err)
 		return CLITerminalResult{
 			Ok:         false,
@@ -66,22 +86,22 @@ func (s *WindowService) OpenCLITerminal() CLITerminalResult {
 
 // openElevatedTerminal 以管理员/elevated 权限启动终端，
 // 并通过 shell 初始化脚本预设 wrapper 环境变量。
-func openElevatedTerminal(workDir, caCertPath string) error {
-	switch goruntime := detectOS(); goruntime {
+func openElevatedTerminal(workDir string) error {
+	switch detectOS() {
 	case "windows":
-		return openWindowsTerminal(workDir, caCertPath)
+		return openWindowsTerminal(workDir)
 	case "darwin":
-		return openDarwinTerminal(workDir, caCertPath)
+		return openDarwinTerminal(workDir)
 	default:
-		return openLinuxTerminal(workDir, caCertPath)
+		return openLinuxTerminal(workDir)
 	}
 }
 
 // ── Windows ──
 
-func openWindowsTerminal(workDir, caCertPath string) error {
-	// 生成临时 batch 文件设置环境变量，避免 PowerShell 内联引号转义问题
-	batchPath, err := writeWindowsEnvBatch(workDir, caCertPath)
+func openWindowsTerminal(workDir string) error {
+	// 生成 batch 文件设置环境变量，避免 PowerShell 内联引号转义问题
+	batchPath, err := writeWindowsEnvBatch(workDir)
 	if err != nil {
 		return fmt.Errorf("生成终端初始化脚本失败: %w", err)
 	}
@@ -90,8 +110,6 @@ func openWindowsTerminal(workDir, caCertPath string) error {
 	// batch 文件内部已 cd /d 到工作目录，无需 -WorkingDirectory 参数
 	wtPath, wtErr := exec.LookPath("wt.exe")
 	if wtErr == nil {
-		// wt.exe: wt -d <dir> cmd.exe /k <batch>
-		// 用数组传参避免引号嵌套
 		args := []string{
 			"-NoProfile", "-Command",
 			fmt.Sprintf(
@@ -113,76 +131,43 @@ func openWindowsTerminal(workDir, caCertPath string) error {
 	return exec.Command("powershell", args...).Start()
 }
 
-// writeWindowsEnvBatch 生成临时 batch 文件设置 wrapper 环境变量。
-func writeWindowsEnvBatch(workDir, caCertPath string) (string, error) {
-	wrapperPath := cursor.CLIWrapperPath()
-	port := extractPortFromWrapper(wrapperPath)
-	preloadPath := filepath.Join(cursor.CLIWrapperDir(), "tls-bypass.cjs")
-	authToken := localruntime.InjectAuthToken
+// writeWindowsEnvBatch 生成 batch 文件设置 wrapper 环境变量。
+// 环境变量配置直接从 wrapper 脚本提取，确保与 wrapper 保持一致。
+func writeWindowsEnvBatch(workDir string) (string, error) {
+	envLines, err := extractEnvSetupLines(cursor.CLIWrapperPath())
+	if err != nil {
+		return "", fmt.Errorf("读取 wrapper 环境配置失败: %w", err)
+	}
 
-	content := fmt.Sprintf(`@echo off
-setlocal
-set "HTTP_PROXY="
-set "HTTPS_PROXY="
-set "CLI_HTTPS_PORT=%s"
-set "NODE_EXTRA_CA_CERTS=%s"
-set "NODE_TLS_REJECT_UNAUTHORIZED=0"
-set "NODE_OPTIONS=--require=%s"
-set "CURSOR_AUTH_TOKEN=%s"
-set "CURSOR_INVOKED_AS=agent.cmd"
-cd /d "%s"
-echo CLI environment initialized. cd to your project and run: cursor-agent
-title Local-Cursor CLI Terminal
-`, port, caCertPath, preloadPath, authToken, workDir)
+	var b strings.Builder
+	b.WriteString("@echo off\n")
+	for _, line := range envLines {
+		b.WriteString(line)
+		b.WriteByte('\n')
+	}
+	fmt.Fprintf(&b, "cd /d \"%s\"\n", workDir)
+	b.WriteString("echo CLI environment initialized. cd to your project and run: cursor-agent\n")
+	b.WriteString("title Local-Cursor CLI Terminal\n")
 
-	batchPath := filepath.Join(cursor.CLIWrapperDir(), "cli-terminal-init.bat")
-	if err := os.WriteFile(batchPath, []byte(content), 0o644); err != nil {
+	batchPath := filepath.Join(cursor.CLIWrapperDir(), cliTerminalInitFilename)
+	if err := os.WriteFile(batchPath, []byte(b.String()), 0o644); err != nil {
 		return "", fmt.Errorf("写入终端初始化脚本失败: %w", err)
 	}
 	return batchPath, nil
 }
 
-// extractPortFromWrapper 从 wrapper 脚本中提取 CLI_HTTPS_PORT 值。
-func extractPortFromWrapper(wrapperPath string) string {
-	data, err := os.ReadFile(wrapperPath)
-	if err != nil {
-		return "39092"
-	}
-	content := string(data)
-	// 查找 set "CLI_HTTPS_PORT=xxxx" 或 export CLI_HTTPS_PORT="xxxx"
-	for _, line := range strings.Split(content, "\n") {
-		line = strings.TrimSpace(line)
-		if strings.Contains(line, "CLI_HTTPS_PORT") {
-			// 提取 = 后面的值
-			idx := strings.Index(line, "=")
-			if idx >= 0 {
-				val := strings.TrimSpace(line[idx+1:])
-				val = strings.Trim(val, `"`)
-				// 去掉 %...% 包裹
-				val = strings.TrimPrefix(strings.TrimSuffix(val, "%"), "%")
-				if val != "" && val != "CLI_HTTPS_PORT" {
-					return val
-				}
-			}
-		}
-	}
-	return "39092"
-}
-
 // ── macOS ──
 
-func openDarwinTerminal(workDir, caCertPath string) error {
-	// macOS: 用 osascript 以管理员权限打开 Terminal.app
-	// 通过 AppleScript 执行 do script 预设环境变量
-	preloadPath := filepath.Join(cursor.CLIWrapperDir(), "tls-bypass.cjs")
-	port := extractPortFromWrapper(cursor.CLIWrapperPath())
-	authToken := localruntime.InjectAuthToken
+func openDarwinTerminal(workDir string) error {
+	envLines, err := extractEnvSetupLines(cursor.CLIWrapperPath())
+	if err != nil {
+		return fmt.Errorf("读取 wrapper 环境配置失败: %w", err)
+	}
 
-	// 构建初始化命令（不执行 cursor-agent）
-	initCmd := fmt.Sprintf(
-		`cd '%s' && unset HTTP_PROXY && unset HTTPS_PROXY && export CLI_HTTPS_PORT='%s' && export NODE_EXTRA_CA_CERTS='%s' && export NODE_TLS_REJECT_UNAUTHORIZED=0 && export NODE_OPTIONS='--require=%s' && export CURSOR_AUTH_TOKEN='%s' && echo 'CLI environment initialized. cd to your project and run: cursor-agent'`,
-		workDir, port, caCertPath, preloadPath, authToken,
-	)
+	parts := []string{fmt.Sprintf("cd '%s'", workDir)}
+	parts = append(parts, envLines...)
+	parts = append(parts, "echo 'CLI environment initialized. cd to your project and run: cursor-agent'")
+	initCmd := strings.Join(parts, " && ")
 
 	// 用 osascript 以管理员权限打开 Terminal 并执行初始化
 	script := fmt.Sprintf(`
@@ -201,9 +186,7 @@ func escapeAppleScript(s string) string {
 
 // ── Linux ──
 
-func openLinuxTerminal(workDir, caCertPath string) error {
-	// Linux: 尝试 pkexec + 常见终端模拟器
-	// 检测可用的终端模拟器
+func openLinuxTerminal(workDir string) error {
 	terminals := []string{"gnome-terminal", "konsole", "xterm", "xfce4-terminal", "alacritty", "kitty"}
 	var terminalPath string
 	for _, t := range terminals {
@@ -216,18 +199,18 @@ func openLinuxTerminal(workDir, caCertPath string) error {
 		return fmt.Errorf("未检测到可用的终端模拟器")
 	}
 
-	preloadPath := filepath.Join(cursor.CLIWrapperDir(), "tls-bypass.cjs")
-	port := extractPortFromWrapper(cursor.CLIWrapperPath())
-	authToken := localruntime.InjectAuthToken
+	envLines, err := extractEnvSetupLines(cursor.CLIWrapperPath())
+	if err != nil {
+		return fmt.Errorf("读取 wrapper 环境配置失败: %w", err)
+	}
 
-	// 构建初始化命令
-	initCmd := fmt.Sprintf(
-		`cd '%s' && unset HTTP_PROXY && unset HTTPS_PROXY && export CLI_HTTPS_PORT='%s' && export NODE_EXTRA_CA_CERTS='%s' && export NODE_TLS_REJECT_UNAUTHORIZED=0 && export NODE_OPTIONS='--require=%s' && export CURSOR_AUTH_TOKEN='%s' && echo 'CLI environment initialized. cd to your project and run: cursor-agent' && exec bash`,
-		workDir, port, caCertPath, preloadPath, authToken,
-	)
+	parts := []string{fmt.Sprintf("cd '%s'", workDir)}
+	parts = append(parts, envLines...)
+	parts = append(parts, "echo 'CLI environment initialized. cd to your project and run: cursor-agent'")
+	parts = append(parts, "exec bash")
+	initCmd := strings.Join(parts, " && ")
 
-	// 用 pkexec 以管理员权限启动终端
-	// 不同终端的参数不同
+	// 用 pkexec 以管理员权限启动终端，不同终端的参数不同
 	var cmd *exec.Cmd
 	switch filepath.Base(terminalPath) {
 	case "gnome-terminal":
