@@ -555,8 +555,13 @@ function normalizeConfig(source) {
       mode: normalizeRouteMode(routing.mode),
     },
     homeMetrics: {
-      includeCacheWriteInHitRate: asBoolean(homeMetrics.includeCacheWriteInHitRate),
-      persistentMode: asBoolean(homeMetrics.persistentMode, true),
+      includeCacheWriteInHitRate: asBoolean(
+        homeMetrics.includeCacheWriteInHitRate ?? raw.includeCacheWriteInHitRate,
+      ),
+      persistentMode: asBoolean(
+        homeMetrics.persistentMode ?? raw.homeMetricsPersistent,
+        true,
+      ),
     },
     lastAgentModelHash: asString(raw.lastAgentModelHash),
     tabServerBaseURL: asString(raw.tabServerBaseURL),
@@ -573,11 +578,10 @@ function asNullableRate(value) {
 
 function normalizeHomeMetrics(source) {
   const raw = source && typeof source === "object" ? source : {};
-  const providerCallsTotal = asPositiveInteger(raw.providerCallsTotal ?? raw.turnsTotal);
   return {
-    turnsTotal: providerCallsTotal,
-    validTurnsTotal: providerCallsTotal,
-    invalidTurnsTotal: 0,
+    turnsTotal: asPositiveInteger(raw.turnsTotal),
+    validTurnsTotal: asPositiveInteger(raw.validTurnsTotal),
+    invalidTurnsTotal: asPositiveInteger(raw.invalidTurnsTotal),
     requestTokensTotal: asPositiveInteger(raw.requestTokensTotal),
     promptTokensTotal: asPositiveInteger(raw.promptTokensTotal),
     cacheReadTokens: asPositiveInteger(raw.cacheReadTokens),
@@ -959,6 +963,10 @@ export async function saveHomeMetricsPersistent(value) {
       persistentMode: nextValue,
     },
   });
+  // persistConfigPayload 内部 applyConfigToState 会用后端返回值覆盖 appState.homeMetricsPersistent，
+  // 需要在完成后恢复为用户选择的值（后端已保存该值，正常情况一致）。
+  appState.homeMetricsPersistent = nextValue;
+  appState.homeMetrics = computeDisplayMetrics();
   if (!result.ok) {
     appState.homeMetricsPersistent = previousValue;
     appState.homeMetrics = computeDisplayMetrics();

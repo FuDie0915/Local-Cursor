@@ -53,7 +53,10 @@ type RoutingConfig struct {
 }
 
 type HomeMetricsConfig struct {
-	IncludeCacheWriteInHitRate bool `json:"includeCacheWriteInHitRate" yaml:"includeCacheWriteInHitRate"`
+	IncludeCacheWriteInHitRate bool  `json:"includeCacheWriteInHitRate" yaml:"includeCacheWriteInHitRate"`
+	// yaml.v3 的 omitempty 会解引用 *bool 并在指向零值(false)时省略字段，
+	// 导致 "关闭累计统计" 永远落盘不下来，因此 YAML 侧不带 omitempty。
+	PersistentMode *bool `json:"persistentMode,omitempty" yaml:"persistentMode"`
 }
 
 type Config struct {
@@ -84,6 +87,10 @@ func DefaultConfig() Config {
 	}
 }
 
+func boolPtr(v bool) *bool {
+	return &v
+}
+
 func NormalizeConfig(input Config) (Config, error) {
 	output := DefaultConfig()
 	output.Log = input.Log
@@ -110,6 +117,12 @@ func NormalizeConfig(input Config) (Config, error) {
 	}
 	output.CLIHTTPSListenAddr = cliHTTPSListenAddr
 	output.HomeMetrics.IncludeCacheWriteInHitRate = input.HomeMetrics.IncludeCacheWriteInHitRate
+	// 旧配置缺少 persistentMode 字段时，默认按累计统计展示，保持向后兼容。
+	if input.HomeMetrics.PersistentMode == nil {
+		output.HomeMetrics.PersistentMode = boolPtr(true)
+	} else {
+		output.HomeMetrics.PersistentMode = input.HomeMetrics.PersistentMode
+	}
 	output.LastAgentModelHash = strings.TrimSpace(input.LastAgentModelHash)
 	output.Routing.Mode = normalizeRoutingMode(input.Routing.Mode)
 	if output.Routing.Mode == "" {
