@@ -330,3 +330,7 @@ task release:github
 ## 致谢
 
 本项目基于 [cursor-byok](https://github.com/leookun/cursor-byok.git) 衍生，感谢原作者的贡献。
+
+## 友链
+
+- [Linux.do](https://linux.do/) — 新的理想型社区
